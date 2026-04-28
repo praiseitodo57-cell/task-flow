@@ -9,11 +9,17 @@ dotenv.config();
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://your-vercel-app.vercel.app"
+];
+
 app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
+  origin: allowedOrigins,
+  credentials: true
 }));
 app.use(express.json());
+app.use
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRouter);
