@@ -223,7 +223,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     if (dbError) throw dbError;
 
-    const acceptLink = `${process.env.FRONTEND_URL}/project/accept-invite?project_id=${project_id}&token=${token}`;
+    const acceptLink = `https://task-flow-client-peach.vercel.app/project/accept-invite?project_id=${project_id}&token=${token}`;
 
     await transporter.sendMail({
       from: process.env.EMAIL_USER,
