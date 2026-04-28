@@ -11,7 +11,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://your-vercel-app.vercel.app"
+  "https://task-flow-client-peach.vercel.app"
 ];
 
 app.use(cors({
