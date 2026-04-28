@@ -1,0 +1,5 @@
+### Step 4 — Owner creates and assigns task to member
+POST http://localhost:5000/project/your-project-id/task
+Authorization: Bearer owner_token
+Content-Type: application/json
+{ "title": "Design homepage", "status": "todo", "assigned_to": "member-user-id" }

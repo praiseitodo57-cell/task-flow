@@ -1,0 +1,3 @@
+
+GET http://localhost:3000/project/your-project-id
+Authorization: Bearer your_token_here

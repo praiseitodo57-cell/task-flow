@@ -1,0 +1,11 @@
+
+# POST http://localhost:5000/api/auth/register
+# Content-Type: application/json
+
+# {
+#   "email": "praiseitodo57@gmail.com",
+#   "password": "Test1234!",
+#   "name": "Praise",
+#   "bio": "Developer"
+# }
+
