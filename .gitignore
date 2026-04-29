@@ -1,0 +1,5 @@
+# Create the .gitignore file
+echo ".env" > .gitignore
+echo "node_modules" >> .gitignore
+echo ".env.local" >> .gitignore
+echo ".env.production" >> .gitignore
