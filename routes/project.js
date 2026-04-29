@@ -2,7 +2,7 @@ import express from "express";
 import crypto from "crypto";
 import { supabase } from "../config/supabase.js";
 import { requireAuth } from "../middleware/auth.js";
-import { transporter } from "../config/mailer.js";
+import { resend } from "../config/mailer.js";
 import { validate, createProjectSchema, inviteSchema, createTaskSchema } from "../middleware/validate.js";
 import { inviteLimiter } from "../middleware/rateLimiter.js";
 
@@ -197,7 +197,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
   const { id: project_id } = req.params;
   const { email, role } = req.body;
  try {
-  
+
   const { data: project } = await supabase
     .from("projects")
     .select("id, title")
@@ -226,9 +226,9 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     const acceptLink = `${process.env.FRONTEND_URL}/project/accept-invite?project_id=${project_id}&token=${token}`;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
-      to: email,
+    await resend.emails.send({
+     from: "TaskFlow <onboarding@resend.dev>", // use this until you add a domain
+       to: email,
       subject: `You've been invited to "${project.title}"`,
       html: `
         <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -347,8 +347,8 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-          await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+         await resend.emails.send({
+           from: "TaskFlow <onboarding@resend.dev>",
             to: assignedUser.user.email,
             subject: `You've been assigned a task in "${project.title}"`,
             html: `
@@ -495,8 +495,8 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-          await transporter.sendMail({
-            from: process.env.EMAIL_USER,
+          await resend.emails.sen({
+            from: "TaskFlow <onboarding@resend.dev>",
             to: assignedUser.user.email,
             subject: `You've been assigned a task in "${project.title}"`,
             html: `
