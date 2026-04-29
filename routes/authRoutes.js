@@ -5,7 +5,6 @@ import { brevo } from "../config/mailer.js";
 import { requireAuth } from "../middleware/auth.js";
 import { validate, registerSchema, loginSchema, otpSchema, forgotPasswordSchema, resetPasswordSchema } from "../middleware/validate.js";
 import { otpLimiter, loginLimiter } from "../middleware/rateLimiter.js";
-import { email } from "zod";
 
 const router = express.Router();
 
@@ -25,7 +24,7 @@ const getOTPExpiry = () => new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 const sendOTPEmail = async (to, otp) =>
   await brevo.transactionalEmails.sendTransacEmail({
     sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-    to: [{ email: recipientEmail }],
+    to: [{ email: to }],
     subject: "Verify your Email",
     htmlContent: `
       <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
@@ -267,7 +266,7 @@ router.post("/forgot-password", otpLimiter, validate(forgotPasswordSchema), asyn
 
     await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: recipientEmail }],
+      to: [{ email: email }],
       subject: "Reset your Password",
       htmlContent: `
         <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
