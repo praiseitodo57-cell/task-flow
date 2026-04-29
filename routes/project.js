@@ -226,7 +226,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     const acceptLink = `${process.env.FRONTEND_URL}/project/accept-invite?project_id=${project_id}&token=${token}`;
 
-    await brevo.sendTransacEmail({
+    await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
       to: [{ email: recipientEmail }],
       subject: `You've been invited to "${project.title}"`,
@@ -347,7 +347,7 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-         await brevo.sendTransacEmail({
+         await brevo.transactionalEmails.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
             to: [{ email: assignedUser.user.recipientEmail }],
             subject: `You've been assigned a task in "${project.title}"`,
@@ -495,7 +495,7 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-          await brevo.sendTransacEmail({
+          await brevo.transactionalEmails.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
             to: [{ email: assignedUser.user.recipientEmail }],
             subject: `You've been assigned a task in "${project.title}"`,

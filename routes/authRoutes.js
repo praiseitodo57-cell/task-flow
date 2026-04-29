@@ -23,9 +23,9 @@ const generateOTP = () =>
 const getOTPExpiry = () => new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
 const sendOTPEmail = async (to, otp) =>
-  await brevo.sendTransacEmail({
+  await brevo.transactionalEmails.sendTransacEmail({
     sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-    to: [{ email: to }],
+    to: [{ email: recipientEmail }],
     subject: "Verify your Email",
     htmlContent: `
       <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
@@ -265,9 +265,9 @@ router.post("/forgot-password", otpLimiter, validate(forgotPasswordSchema), asyn
 
     if (dbError) throw dbError;
 
-    await brevo.sendTransacEmail({
+    await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: email }],
+      to: [{ email: recipientEmail }],
       subject: "Reset your Password",
       htmlContent: `
         <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
