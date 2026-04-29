@@ -196,7 +196,8 @@ router.delete("/:id", requireAuth, async (req, res) => {
 router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), async (req, res) => {
   const { id: project_id } = req.params;
   const { email, role } = req.body;
-
+ try {
+  
   const { data: project } = await supabase
     .from("projects")
     .select("id, title")
@@ -212,7 +213,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
     return res.status(400).json({ error: "You cannot invite yourself" });
   }
 
-  try {
+ 
     const token = crypto.randomUUID();
     const expires_at = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
