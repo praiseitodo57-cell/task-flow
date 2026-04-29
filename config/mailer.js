@@ -1,7 +1,7 @@
 // config/mailer.js
-import * as Brevo from "@getbrevo/brevo";
+import SibApiV3Sdk from "@getbrevo/brevo";
 
-const client = new Brevo.TransactionalEmailsApi();
+const client = new SibApiV3Sdk.TransactionalEmailsApi();
 client.authentications["apiKey"].apiKey = process.env.BREVO_API_KEY;
 
 export { client as brevo };
