@@ -196,24 +196,22 @@ router.delete("/:id", requireAuth, async (req, res) => {
 router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), async (req, res) => {
   const { id: project_id } = req.params;
   const { email, role } = req.body;
- try {
+  try {
+    const { data: project } = await supabase
+      .from("projects")
+      .select("id, title")
+      .eq("id", project_id)
+      .eq("user_id", req.user.id)
+      .single();
 
-  const { data: project } = await supabase
-    .from("projects")
-    .select("id, title")
-    .eq("id", project_id)
-    .eq("user_id", req.user.id)
-    .single();
+    if (!project) {
+      return res.status(403).json({ error: "Not authorized to invite to this project" });
+    }
 
-  if (!project) {
-    return res.status(403).json({ error: "Not authorized to invite to this project" });
-  }
+    if (email === req.user.email) {
+      return res.status(400).json({ error: "You cannot invite yourself" });
+    }
 
-  if (email === req.user.email) {
-    return res.status(400).json({ error: "You cannot invite yourself" });
-  }
-
- 
     const token = crypto.randomUUID();
     const expires_at = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
 
@@ -228,7 +226,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     await brevo.transactionalEmails.sendTransacEmail({
       sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: recipientEmail }],
+      to: [{ email: email }],
       subject: `You've been invited to "${project.title}"`,
       htmlContent: `
         <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -347,9 +345,9 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-         await brevo.transactionalEmails.sendTransacEmail({
+          await brevo.transactionalEmails.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.recipientEmail }],
+            to: [{ email: assignedUser.user.email }],
             subject: `You've been assigned a task in "${project.title}"`,
             htmlContent: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -359,7 +357,7 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
                 ${data.description ? `<p>${data.description}</p>` : ""}
                 ${data.due_date ? `<p>Due: <strong>${data.due_date}</strong></p>` : ""}
                 <p>Status: <strong>${data.status}</strong></p>
-                <a href="${process.env.APP_URL}/project/${project_id}"
+                <a href="${process.env.FRONTEND_URL}/project/${project_id}"
                    style="display:inline-block;padding:12px 24px;background:#4F46E5;color:white;
                           text-decoration:none;border-radius:6px;font-weight:bold;margin:16px 0">
                   View Project
@@ -497,7 +495,7 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
         if (assignedUser?.user?.email) {
           await brevo.transactionalEmails.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.recipientEmail }],
+            to: [{ email: assignedUser.user.email }],
             subject: `You've been assigned a task in "${project.title}"`,
             htmlContent: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -506,7 +504,7 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
                 ${data.description ? `<p>${data.description}</p>` : ""}
                 ${data.due_date ? `<p>Due: <strong>${data.due_date}</strong></p>` : ""}
                 <p>Status: <strong>${data.status}</strong></p>
-                <a href="${process.env.APP_URL}/project/${project_id}"
+                <a href="${process.env.FRONTEND_URL}/project/${project_id}"
                    style="display:inline-block;padding:12px 24px;background:#4F46E5;color:white;
                           text-decoration:none;border-radius:6px;font-weight:bold;margin:16px 0">
                   View Project
