@@ -228,7 +228,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     await resend.emails.send({
      from: "TaskFlow <onboarding@resend.dev>", // use this until you add a domain
-       to: email,
+       to: email, // change to "email" in production
       subject: `You've been invited to "${project.title}"`,
       html: `
         <div style="font-family:sans-serif;max-width:400px;margin:auto">

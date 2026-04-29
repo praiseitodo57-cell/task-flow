@@ -5,6 +5,7 @@ import { resend } from "../config/mailer.js";
 import { requireAuth } from "../middleware/auth.js";
 import { validate, registerSchema, loginSchema, otpSchema, forgotPasswordSchema, resetPasswordSchema } from "../middleware/validate.js";
 import { otpLimiter, loginLimiter } from "../middleware/rateLimiter.js";
+import { email } from "zod";
 
 const router = express.Router();
 
@@ -24,7 +25,7 @@ const getOTPExpiry = () => new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 const sendOTPEmail = async (to, otp) =>
   await resend.emails.send({
   from: "TaskFlow <onboarding@resend.dev>",
-    to,
+    to: email,
     subject: "Verify your Email",
     html: `
       <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
