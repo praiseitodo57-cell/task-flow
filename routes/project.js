@@ -228,7 +228,7 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     await brevo.sendTransacEmail({
       sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: email }],
+      to: [{ email: recipientEmail }],
       subject: `You've been invited to "${project.title}"`,
       htmlContent: `
         <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -349,7 +349,7 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
         if (assignedUser?.user?.email) {
          await brevo.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.email }],
+            to: [{ email: assignedUser.user.recipientEmail }],
             subject: `You've been assigned a task in "${project.title}"`,
             htmlContent: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">
@@ -497,7 +497,7 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
         if (assignedUser?.user?.email) {
           await brevo.sendTransacEmail({
             sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.email }],
+            to: [{ email: assignedUser.user.recipientEmail }],
             subject: `You've been assigned a task in "${project.title}"`,
             htmlContent: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">

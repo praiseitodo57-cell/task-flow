@@ -1,6 +1,7 @@
-import * as Brevo from "@getbrevo/brevo";
+import { Brevo } from "@getbrevo/brevo";
 
-const client = new Brevo.TransactionalEmailsApi();
-client.authentications["apiKey"].apiKey = process.env.BREVO_API_KEY;
+const client = new Brevo({
+  apiKey: process.env.BREVO_API_KEY,
+});
 
 export { client as brevo };
