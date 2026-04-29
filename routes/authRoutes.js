@@ -1,7 +1,7 @@
 import express from "express";
 import otpGenerator from "otp-generator";
 import { supabase } from "../config/supabase.js";
-import { transporter } from "../config/mailer.js";
+import { resend } from "../config/mailer.js";
 import { requireAuth } from "../middleware/auth.js";
 import { validate, registerSchema, loginSchema, otpSchema, forgotPasswordSchema, resetPasswordSchema } from "../middleware/validate.js";
 import { otpLimiter, loginLimiter } from "../middleware/rateLimiter.js";
