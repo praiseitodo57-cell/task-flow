@@ -21,9 +21,9 @@ const generateOTP = () =>
 
 const getOTPExpiry = () => new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
-const sendOTPEmail = (to, otp) =>
-  transporter.sendMail({
-    from: process.env.EMAIL_USER,
+const sendOTPEmail = async (to, otp) =>
+  await resend.emails.send({
+  from: "TaskFlow <onboarding@resend.dev>",
     to,
     subject: "Verify your Email",
     html: `
@@ -264,8 +264,8 @@ router.post("/forgot-password", otpLimiter, validate(forgotPasswordSchema), asyn
 
     if (dbError) throw dbError;
 
-    await transporter.sendMail({
-      from: process.env.EMAIL_USER,
+    await resend.emails.send({
+    from: "TaskFlow <onboarding@resend.dev>",
       to: email,
       subject: "Reset your Password",
       html: `
