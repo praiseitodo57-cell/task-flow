@@ -2,7 +2,7 @@ import express from "express";
 import crypto from "crypto";
 import { supabase } from "../config/supabase.js";
 import { requireAuth } from "../middleware/auth.js";
-import { brevo } from "../config/mailer.js"
+import { resend } from "../config/mailer.js";
 import { validate, createProjectSchema, inviteSchema, createTaskSchema } from "../middleware/validate.js";
 import { inviteLimiter } from "../middleware/rateLimiter.js";
 
@@ -224,11 +224,11 @@ router.post("/:id/invite", inviteLimiter, requireAuth, validate(inviteSchema), a
 
     const acceptLink = `${process.env.FRONTEND_URL}/project/accept-invite?project_id=${project_id}&token=${token}`;
 
-    await brevo.transactionalEmails.sendTransacEmail({
-      sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: email }],
+        await resend.emails.send({
+      from: "TaskFlow <onboarding@resend.dev>",  // or your verified domain
+      to: email,
       subject: `You've been invited to "${project.title}"`,
-      htmlContent: `
+      html: `
         <div style="font-family:sans-serif;max-width:400px;margin:auto">
           <h2>You've been invited!</h2>
           <p>You have been invited to join <strong>${project.title}</strong> as a <strong>${role}</strong>.</p>
@@ -345,11 +345,11 @@ router.post("/:id/task", requireAuth, validate(createTaskSchema), async (req, re
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-          await brevo.transactionalEmails.sendTransacEmail({
-            sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.email }],
+          await resend.emails.send({
+            from: "TaskFlow <onboarding@resend.dev>",  // or your verified domain
+            to: email,
             subject: `You've been assigned a task in "${project.title}"`,
-            htmlContent: `
+            html: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">
                 <h2>New Task Assigned</h2>
                 <p>You have been assigned a new task:</p>
@@ -493,11 +493,11 @@ router.patch("/:id/task/:task_id", requireAuth, async (req, res) => {
       try {
         const { data: assignedUser } = await supabase.auth.admin.getUserById(assigned_to);
         if (assignedUser?.user?.email) {
-          await brevo.transactionalEmails.sendTransacEmail({
-            sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-            to: [{ email: assignedUser.user.email }],
+          await resend.emails.send({
+          from: "TaskFlow <onboarding@resend.dev>",  // or your verified domain
+          to: email,
             subject: `You've been assigned a task in "${project.title}"`,
-            htmlContent: `
+            html: `
               <div style="font-family:sans-serif;max-width:400px;margin:auto">
                 <h2>Task Assigned to You</h2>
                 <h3 style="color:#4F46E5">${data.title}</h3>

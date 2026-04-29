@@ -1,7 +1,7 @@
 import express from "express";
 import otpGenerator from "otp-generator";
 import { supabase } from "../config/supabase.js";
-import { brevo } from "../config/mailer.js";
+import { resend } from "../config/mailer.js";
 import { requireAuth } from "../middleware/auth.js";
 import { validate, registerSchema, loginSchema, otpSchema, forgotPasswordSchema, resetPasswordSchema } from "../middleware/validate.js";
 import { otpLimiter, loginLimiter } from "../middleware/rateLimiter.js";
@@ -22,11 +22,11 @@ const generateOTP = () =>
 const getOTPExpiry = () => new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
 const sendOTPEmail = async (to, otp) =>
-  await brevo.transactionalEmails.sendTransacEmail({
-    sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-    to: [{ email: to }],
+  await resend.emails.send({
+  from: "TaskFlow <onboarding@resend.dev>",  // or your verified domain
+  to: email,
     subject: "Verify your Email",
-    htmlContent: `
+    html: `
       <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
         <h2>Your Verification Code</h2>
         <p style="font-size: 2rem; font-weight: bold; letter-spacing: 0.3rem;">${otp}</p>
@@ -264,11 +264,11 @@ router.post("/forgot-password", otpLimiter, validate(forgotPasswordSchema), asyn
 
     if (dbError) throw dbError;
 
-    await brevo.transactionalEmails.sendTransacEmail({
-      sender: { name: "TaskFlow", email: "praiseitodo57@gmail.com" },
-      to: [{ email: email }],
+    await resend.emails.send({
+      from: "TaskFlow <onboarding@resend.dev>",  // or your verified domain
+      to: email,
       subject: "Reset your Password",
-      htmlContent: `
+      html: `
         <div style="font-family: sans-serif; max-width: 400px; margin: auto;">
           <h2>Password Reset Request</h2>
           <p>Use the code below to reset your password:</p>
